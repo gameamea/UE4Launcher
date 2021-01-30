@@ -616,7 +616,6 @@ function downloadVaultData(cb) {
         loop();
       }
       //console.log(data);
-      //fs.writeFileSync(p.join(__dirname, "test.json"), JSON.stringify(data));
     });
   })();
 }
