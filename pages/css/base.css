@@ -286,6 +286,7 @@ legend {
 
 .not-implemented {
   cursor: not-allowed;
+  display: none;
 }
 
 .iconButton {
