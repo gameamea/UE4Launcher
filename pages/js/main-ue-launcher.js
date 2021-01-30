@@ -24,7 +24,6 @@ let findInPage = new FindInPage(electron.remote.getCurrentWebContents(), {
   duration: 200,
 });
 
-var unrealEnginePath = "/storage/UnrealEngine/Engine/Binaries/Linux/UE4Editor"; ///TODO: Get real path.
 var lastEngineLaunched;
 var lastProjectLaunched;
 var lastProjectLaunchedTime;
@@ -104,7 +103,6 @@ function launchEngine(engine, project) {
   var curTime = Date.now();
   var child;
 
-  //engine = engine || unrealEnginePath
   if (!engine) {
     if (lastEngineLaunched) {
       engine = lastEngineLaunched;
