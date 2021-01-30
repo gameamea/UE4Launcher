@@ -93,7 +93,7 @@ var login = (function () {
     });
   }
 
-  /// Step 3: authroize
+  /// Step 3: authorize
   function webAuthorize(ondone, onerror, onprogress) {
     var opts = {
       uri: "https://www.epicgames.com/id/api/authenticate",
@@ -224,7 +224,7 @@ var login = (function () {
         token_type: "eg1",
       },
       headers: {
-        /// Is this ID neccessary? What about each part?
+        /// Is this ID necessary? What about each part?
         "X-Epic-Correlation-ID":
           "UE4-" +
           request._fakeJar.EPIC_DEVICE +
@@ -567,8 +567,8 @@ function downloadItemManifest(itemBuildInfo, hostNum, useAuth, cb) {
   };
 
   if (!distributionName) {
-    console.error("No more distrubition hosts to try for manifest.");
-    return cb(new Error("No more distrubition hosts to try for manifest."));
+    console.error("No more distribution hosts to try for manifest.");
+    return cb(new Error("No more distribution hosts to try for manifest."));
   }
 
   if (useAuth) {
@@ -741,8 +741,8 @@ function downloadChunks(
     distributionName = selectDistributionHost(itemBuildInfo, chunk.hostNum);
 
     if (!distributionName) {
-      console.error("No more distrubition hosts to try for chunk.");
-      return onerror(new Error("No more distrubition hosts to try for chunk."));
+      console.error("No more distribution hosts to try for chunk.");
+      return onerror(new Error("No more distribution hosts to try for chunk."));
     }
 
     opts = {
@@ -1117,7 +1117,7 @@ function addAssetToProject(
       versions = getItemVersions(assetInfo);
 
       if (!versions[projectVersion]) {
-        return onerror("Version " + projectVersion + " is not avaiable.");
+        return onerror("Version " + projectVersion + " is not available.");
       }
       ///TODO: Skip getting build info if already extracted?
       console.log("Getting build info...");

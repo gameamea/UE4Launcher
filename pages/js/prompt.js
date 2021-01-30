@@ -135,7 +135,7 @@
     /**
      * Show an alert box
      *
-     * @param {*} callback the function called on complete. (outome) => { }
+     * @param {*} callback the function called on complete. (outcome) => { }
      * @param {*} msg The message to display
      * @param {*} okText The ok button text. If undefined it will use the options value
      * @param {*} opts Alert options to override
@@ -212,7 +212,7 @@
     /**
      * Show a confirm dialog with cancel and confirm actions
      *
-     * @param {*} callback the function called on complete. (outome) => { }
+     * @param {*} callback the function called on complete. (outcome) => { }
      * @param {*} msg The message to display
      * @param {*} submitText The confirm button text. If undefined it will use the options value
      * @param {*} cancelText The cancel button text. If undefined it will use the options value

@@ -583,7 +583,7 @@ function downloadVaultData(cb) {
       //debugger;
       console.log(data);
       if (err || !data || data.status !== "OK") {
-        /// Did the user not cancle the update?
+        /// Did the user not cancel the update?
         if (!err || err.message !== "Login window closed unexpectedly") {
           console.error("Cannot download vault page: " + url);
           console.error(err);

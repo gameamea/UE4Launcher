@@ -215,7 +215,7 @@ function prepareForAddingAssets() {
 
   ipc.on("addingAssetErr", function (event, data) {
     data = parseJson(data);
-    error("Asset installation falied.");
+    error("Asset installation failed.");
     console.error(data);
 
     onfinish();
