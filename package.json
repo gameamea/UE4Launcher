@@ -8,7 +8,8 @@
     "debug": "electron --inspect-brk ."
   },
   "keywords": [
-    "UE4","Assets"
+    "UE4",
+    "Assets"
   ],
   "author": "laurent@gameamea.com",
   "license": "MIT",

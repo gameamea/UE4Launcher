@@ -17,9 +17,10 @@ It should offer:
 - show asset informations: description, tags, engine versions compatibility, prices, sales...
 - remove/hide unimplemented features (from the Epic launcher windows version)
 - download and installation of assets (same as the original project features)
+- make some UI improvements
 
 ## Thanks
 
-- https://github.com/nmrugg/UE4Launcher
-- https://github.com/Allar/ue4-mp-downloader
-- https://github.com/neutrino-steak/UE4LinuxLauncher
+- <https://github.com/nmrugg/UE4Launcher>
+- <https://github.com/Allar/ue4-mp-downloader>
+- <https://github.com/neutrino-steak/UE4LinuxLauncher>
