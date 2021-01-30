@@ -39,18 +39,18 @@ function mkdirSync(dir)
 function loadConfig()
 {
     configData = loadJsonFile.sync(configPath, {});
-    
+
     verifyConfigData();
 }
 
 function verifyConfigData()
 {
     var os;
-    
+
     if (!configData.engines) {
         configData.engines = [];
     }
-    
+
     if (!configData.projectDirPaths || configData.projectDirPaths.length === 0) {
         os = require("os");
         configData.projectDirPaths = [
@@ -146,7 +146,7 @@ function getJson(url, options, cb)
     if (typeof options.login === "undefined") {
         options.login = true;
     }
-    
+
     downloadURL(url, options, function ondownload(err, data)
     {
         if (!err) {
@@ -156,7 +156,7 @@ function getJson(url, options, cb)
                 return cb(e);
             }
         }
-        
+
         cb(err, data);
     });
 }
@@ -167,13 +167,13 @@ function downloadURL(url, options, cb)
     var urlOpts;
     var retries = 0;
     var sendRequest;
-    
+
     /// Make requireLogin optional.
     if (typeof requireLogin === "function") {
         cb = options;
         options = {};
     }
-    
+
     if (options.login && !cookies) {
         return loginIfNecessary(function (err)
         {
@@ -184,11 +184,11 @@ function downloadURL(url, options, cb)
             }
         });
     }
-    
+
     urlOpts = options.urlOpts || {
         url: url,
     };
-    
+
     if (options.login) {
         if (!urlOpts.headers) {
             urlOpts.headers = {};
@@ -197,11 +197,11 @@ function downloadURL(url, options, cb)
             Cookie: request._getWebCookieString(),
         };
     }
-    
+
     if (typeof urlOpts.timeout === "undefined") {
         urlOpts.timeout = 30000;
     }
-    
+
     sendRequest = function ()
     {
         request.get(urlOpts, function(err, res, body)
@@ -220,7 +220,7 @@ function downloadURL(url, options, cb)
             cb(err, body);
         });
     };
-    
+
     sendRequest();
 }
 
@@ -234,18 +234,18 @@ function login(cb)
     var atLeastOnePageLoaded = false;
     var loginURL = "https://www.epicgames.com/id/login";
     var currentURL = loginURL;
-    
+
     /// Another url
     console.log("logging in")
-    
+
     if (loginWindow) {
         try {
             loginWindow.close();
         } catch (e) {}
     }
-    
+
     isLoggedIn = false;
-    
+
     // Create the browser window.
     loginWindow = new BrowserWindow({
         width: 800,
@@ -257,27 +257,27 @@ function login(cb)
         */
         icon: p.join(__dirname, "ue-logo.png"),
         show: true, /// Use FALSE for graceful loading
-        title: "Unreal Engine Launcher"
+        title: "Unreal Engine Assets Manager"
     });
     contents = loginWindow.webContents;
-    
+
     // and load the index.html of the app.
     //loginWindow.loadFile("index.html")
     loginWindow.loadURL(loginURL);
     /*
     loginWindow.removeMenu();
-    
+
     loginWindow.setMenuBarVisibility(false);
-    
+
     loginWindow.setMenu(null);
     */
-    
+
     //let menu = Menu.buildFromTemplate([]);
-    
-    
+
+
     // Open the DevTools.
     // loginWindow.webContents.openDevTools()
-    
+
     // Emitted when the window is closed.
     /*
     loginWindow.on("closed", function ()
@@ -288,7 +288,7 @@ function login(cb)
         mainWindow = null;
     });
     */
-    
+
     loginWindow.on("closed", function ()
     {
         if (!isLoggedIn && cb) {
@@ -297,7 +297,7 @@ function login(cb)
             cb = null;
         }
     });
-    
+
     /// Set the show to FALSE to use.
     /**
     loginWindow.once("ready-to-show", function ()
@@ -330,7 +330,7 @@ function login(cb)
             cb = null;
         }
     }
-    
+
     function redirectOnLogOut()
     {
         if (needsToRedirect) {
@@ -339,7 +339,7 @@ function login(cb)
             console.log("Redirecting to login.");
         }
     }
-    
+
     function getCookiesFromSession(cb)
     {
         electron.session.defaultSession.cookies.get({}).then(function onget(sessionCookies)
@@ -350,20 +350,20 @@ function login(cb)
             cb(err);
         });
     }
-    
+
     function hasLoginCookie(sessionCookies)
     {
         var i;
-        
+
         for (i = sessionCookies.length - 1; i >= 0; --i) {
             if (sessionCookies[i] && sessionCookies[i].name && sessionCookies[i].name.toUpperCase() === "EPIC_SSO") {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     function checkIfLoggedIn()
     {
         if (atLeastOnePageLoaded && currentURL.indexOf("id/login") === -1) {
@@ -385,8 +385,8 @@ function login(cb)
             });
         }
     }
-    
-    
+
+
     contents.on("did-frame-navigate", function (e, url, code, status, isMainFrame, frameProcessId, frameRoutingId)
     {
         console.log("did-frame-navigate", url)
@@ -484,7 +484,7 @@ function createMainWindow()
 {
     sanitizeConfigWindowData();
     console.log(configData)
-    
+
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: configData.width, /// 1200
@@ -497,26 +497,26 @@ function createMainWindow()
             nodeIntegration: true,
             devTools: configData.devTools,
         },
-        
+
         icon: p.join(__dirname, "ue-logo.png"),
         show: true, /// Use FALSE for graceful loading
-        title: "Unreal Engine Launcher"
+        title: "Unreal Engine Assets Manager"
     });
     var contents = mainWindow.webContents;
     // and load the index.html of the app.
     mainWindow.loadFile("pages/unreal_engine.html");
-    
+
     if (configData.devTools) {
         mainWindow.webContents.openDevTools()
     } else {
         /// Make it show up in the json file for easy editing.
         configData.devTools = false;
     }
-    
+
     if (configData.isMaximized) {
         mainWindow.maximize();
     }
-    
+
     function saveSizeAndPos()
     {
         var size = mainWindow.getSize();
@@ -527,7 +527,7 @@ function createMainWindow()
         configData.y = pos[1];
         saveConfig();
     }
-    
+
     mainWindow.on("close", function ()
     {
         if (!configData.isMaximized) {
@@ -540,13 +540,13 @@ function createMainWindow()
             } catch (e) {}
         }
     });
-    
+
     mainWindow.on("maximize", function ()
     {
         configData.isMaximized = true;
         saveConfig();
     });
-    
+
     mainWindow.on("unmaximize", function ()
     {
         configData.isMaximized = false;
@@ -557,13 +557,13 @@ function createMainWindow()
 function isInVault(vault, el)
 {
     var i;
-    
+
     for (i = vault.length - 1; i >= 0; --i) {
         if (vault[i].catalogItemId === el.catalogItemId) {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -573,13 +573,13 @@ function downloadVaultData(cb)
     var dlCount = 25;
     var dlTotal;
     var dlIndex;
-    
+
     function done()
     {
         console.log("Done downloading vault");
         cb(vault);
     }
-    
+
     if (vaultData && vaultData.length) {
         vault = vaultData;
         dlIndex = vaultData.length;
@@ -591,15 +591,15 @@ function downloadVaultData(cb)
     (function loop()
     {
         var url;
-        
+
         console.log(dlIndex);
         //debugger;
         if (dlTotal !== undefined && dlIndex >= dlTotal - 1) {
             return done();
         }
-        
+
         url = "https://www.unrealengine.com/marketplace/api/assets/vault?start=" + dlIndex + "&count=" + dlCount;
-        
+
         getJson(url, function (err, data)
         {
             var addedCount = 0;
@@ -619,7 +619,7 @@ function downloadVaultData(cb)
                 cb(vault);
             } else {
                 dlTotal = data.data.paging.total;
-                
+
                 if (data.data && data.data.elements && data.data.elements.length) {
                     data.data.elements.forEach(function addIfNew(element)
                     {
@@ -650,14 +650,14 @@ function getVault()
     if (typeof vaultData === "undefined") {
         vaultData = loadJsonFile.sync(vaultPath, []);
     }
-    
+
     return vaultData;
 }
-        
+
 function updateVault(ignoreCache, cb)
 {
     var shouldDownload;
-    
+
     if (offline) {
         console.log("Not updating vault: offline")
         if (cb) {
@@ -665,14 +665,14 @@ function updateVault(ignoreCache, cb)
         }
     } else {
         shouldDownload = true;
-        
+
         try {
             /// Only update the vault every 18 hours by default.
             if (!ignoreCache && fs.existsSync(vaultPath) && Date.now() - fs.statSync(vaultPath).mtime.valueOf() < 1000 * 60 * 60 * 18) {
                 shouldDownload = false;
             }
         } catch (e) {}
-        
+
         if (shouldDownload) {
             downloadVaultData(function (data)
             {
@@ -681,9 +681,9 @@ function updateVault(ignoreCache, cb)
                 } else {
                     vaultData = [];
                 }
-                
+
                 fs.writeFileSync(vaultPath, JSON.stringify(vaultData));
-                
+
                 if (cb) {
                     cb(vaultData);
                 }
@@ -742,7 +742,7 @@ function getEngineVersion(path)
 {
     var data;
     var match
-    
+
     try {
         //Engine/Build/Build.version ;
         data = JSON.parse(fs.readFileSync(p.join(path, "Engine", "Build", "Build.version"), "utf8"));
@@ -750,7 +750,7 @@ function getEngineVersion(path)
             return data.MajorVersion + "." + data.MinorVersion;
         }
     } catch (e) {}
-    
+
     try {
         /// Check the last tag for the engine number.
         data = require("child_process").execSync("git describe --abbrev=0", {stdio: "pipe", cwd: path, encoding: "utf8"}).trim();
@@ -759,7 +759,7 @@ function getEngineVersion(path)
             return match[1];
         }
     } catch (e) {}
-    
+
     try {
         /// Check BRANCH_NAME in UE4Defines.pri for the engine number.
         data = fs.readFileSync(p.join(path, "UE4Defines.pri"), "utf8");
@@ -768,7 +768,7 @@ function getEngineVersion(path)
             return match[1];
         }
     } catch (e) {}
-    
+
 }
 
 
@@ -777,7 +777,7 @@ function addEngine(path)
     var engineBasePath;
     var engineVersion;
     var execPath;
-    
+
     /// Is this a link to the file?
     try {
         if (!fs.lstatSync(path).isDirectory()) {
@@ -785,7 +785,7 @@ function addEngine(path)
         }
         execPath = path;
     } catch (e) {}
-    
+
     if (!engineBasePath) {
         /// Is it a link to the folder with the binary?
         try {
@@ -795,16 +795,16 @@ function addEngine(path)
             }
         } catch (e) {}
     }
-    
+
     if (!engineBasePath) {
         /// Assume that it's the path to the root of the engine.
         engineBasePath = path;
         ///TODO: Support other platforms
         execPath = p.join(engineBasePath, "Engine", "Binaries", "Linux", "UE4Editor");
     }
-    
+
     engineVersion = getEngineVersion(engineBasePath);
-    
+
     if (engineVersion) {
         configData.engines.push({
             baseDir: engineBasePath,
@@ -814,7 +814,7 @@ function addEngine(path)
         saveConfig();
         return true;
     }
-    
+
     throw new Error("Cannot add engine");
 }
 
@@ -825,7 +825,7 @@ function findImageInDir(dir, cb)
         var i;
         var len;
         var ext;
-        
+
         if (paths) {
             len = paths.length;
             for (i = 0; i < len; ++i) {
@@ -848,7 +848,7 @@ function findImage(path, cb)
         if (imgPath) {
             return cb(imgPath);
         }
-        
+
         findImageInDir(path, cb);
     });
 }
@@ -862,7 +862,7 @@ function addLocalAssetDir(path, cb)
             path: path,
             thumbnail: imagePath,
         });
-        
+
         saveLocalAssets(function ()
         {
             cb();
@@ -887,18 +887,18 @@ function addLocalAsset(path, cb)
     /// Find icon
     /// Add to JSON
     /// Reply
-    
+
     if (hasLocalAsset(path)) {
         return cb("This asset has already been added.");
     }
-    
+
     fs.stat(path, function onstat(err, stat)
     {
         if (err) {
             console.error(err);
             return cb("Path cannot be read.");
         }
-        
+
         if (stat.isDirectory()) {
             addLocalAssetDir(path, cb);
         }
@@ -909,13 +909,13 @@ function addLocalAsset(path, cb)
 function delLocalAsset(path, cb)
 {
     var i;
-    
+
     for (i = localAssetsData.length - 1; i >= 0; --i) {
         if (localAssetsData[i].path === path) {
             localAssetsData.splice(i, 1);
         }
     }
-    
+
     saveLocalAssets(function ()
     {
         cb();
@@ -936,14 +936,14 @@ function loadAssetCache(cb)
 ipc.on("getVault", function (e/*, arg*/)
 {
     console.log("getting vault");
-    
+
     e.returnValue = JSON.stringify(getVault());
 });
 
 ipc.on("updateVault", function (e, ignoreCache)
 {
     console.log("updating vault");
-    
+
     updateVault(ignoreCache === "1", function (data)
     {
         e.reply("updateVault", data ? JSON.stringify(data) : "");
@@ -1000,16 +1000,16 @@ ipc.on("delLocalAsset", function (e, path)
 ipc.on("addAssetToProject", function (e, data)
 {
     var resId;
-    
+
     console.log("Adding asset");
-    
+
     data = JSON.parse(data);
-    
+
     resId = {asset: data.assetData.catalogItemId, project: data.projectData.name};
-    
+
     console.log(data);
     console.log(resId);
-    
+
     if (data.assetData.isLocal) {
         assetAPI.moveToProject(data.assetData.path, data.projectData.dir, function ondone()
         {
@@ -1050,13 +1050,13 @@ ipc.on("getLocalAssets", function (e, arg)
 ipc.on("updateProjectDirs", function (e, paths)
 {
     var os = require("os");
-    
+
     if (paths) {
         /// Make sure it does not freeze.
         try {
             /// Clean up whitespace, convert leading ~ to home directory.
             paths = paths.trim().replace(/\r/g, "").replace(/\n{2,}/g, "\n").replace(/(^|\n)~/g, "$1" + os.homedir());
-            
+
             configData.projectDirPaths = paths.split("\n");
             verifyConfigData();
             saveConfig();
