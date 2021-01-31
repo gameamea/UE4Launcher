@@ -485,6 +485,22 @@ function createMainWindow() {
     title: "Unreal Engine Assets Manager",
   });
   var contents = mainWindow.webContents;
+
+	// remove X-Frame-Options from header to allow the learn tab display content in an iframe
+	// more infos: https://stackoverflow.com/questions/52863908/electron-bypass-x-frame-options-in-sameorigin
+  contents.session.webRequest.onHeadersReceived(
+    { urls: ["*://*/*"] },
+    (d, c) => {
+      if (d.responseHeaders["X-Frame-Options"]) {
+        delete d.responseHeaders["X-Frame-Options"];
+      } else if (d.responseHeaders["x-frame-options"]) {
+        delete d.responseHeaders["x-frame-options"];
+      }
+
+      c({ cancel: false, responseHeaders: d.responseHeaders });
+    }
+  );
+
   // and load the index.html of the app.
   mainWindow.loadFile("pages/unreal_engine.html");
 
