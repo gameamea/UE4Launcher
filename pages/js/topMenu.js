@@ -2,11 +2,20 @@
 
 var main = document.getElementById("main");
 
-var learnTab = document.getElementById("learnTab");
 var libraryTab = document.getElementById("libraryTab");
-
 var libraryPane = document.getElementById("libraryPane");
-var urlPane = document.getElementById("urlPane");
+
+var projectsTab = document.getElementById("projectsTab");
+var projectsPane = document.getElementById("projectsPane");
+
+var enginesTab = document.getElementById("enginesTab");
+var enginesPane = document.getElementById("enginesPane");
+
+var localAssetsTab = document.getElementById("localAssetsTab");
+var localAssetsPane = document.getElementById("localAssetsPane");
+
+var learnTab = document.getElementById("learnTab");
+var learnPane = document.getElementById("learnPane");
 
 var iframe;
 
@@ -27,11 +36,11 @@ function addIframe() {
   iframe = document.createElement("iframe");
   iframe.src = "https://launcher-website-prod07.ol.epicgames.com/ue/learn/";
   window.addEventListener("resize", watchIframeSize);
-  urlPane.appendChild(iframe);
+  learnPane.appendChild(iframe);
   watchIframeSize();
 }
 
-function clearURLPane() {
+function clearlearnPane() {
   main.classList.remove("noScroll");
   if (iframe) {
     try {
@@ -39,30 +48,87 @@ function clearURLPane() {
     } catch (e) {}
     iframe = undefined;
   }
-  urlPane.innerHTML = "";
+  learnPane.innerHTML = "";
   window.removeEventListener("resize", watchIframeSize);
+}
+
+function showPane(name) {
+  var Tab = document.getElementById(name + "Tab");
+  var Pane = document.getElementById(name + "Pane");
+  Tab.classList.add("selected");
+  Pane.classList.remove("hiddenPane");
+  if (name == "learn") {
+    addIframe();
+  }
+}
+
+function hidePane(name) {
+  var Tab = document.getElementById(name + "Tab");
+  var Pane = document.getElementById(name + "Pane");
+  Tab.classList.remove("selected");
+  Pane.classList.add("hiddenPane");
+  if (name == "learn") {
+    clearlearnPane();
+  }
 }
 
 function implementLibraryTab() {
   libraryTab.onclick = function click() {
-    libraryTab.classList.add("selected");
-    learnTab.classList.remove("selected");
-    urlPane.classList.add("hiddenPane");
-    libraryPane.classList.remove("hiddenPane");
-    clearURLPane();
+    showPane("library");
+
+    hidePane("projects");
+    hidePane("engines");
+    hidePane("localAssets");
+    hidePane("learn");
+  };
+}
+
+function implementprojectsTab() {
+  projectsTab.onclick = function click() {
+    showPane("projects");
+
+    hidePane("library");
+    hidePane("engines");
+    hidePane("localAssets");
+    hidePane("learn");
+  };
+}
+
+function implementenginesTab() {
+  enginesTab.onclick = function click() {
+    showPane("engines");
+
+    hidePane("library");
+    hidePane("projects");
+    hidePane("localAssets");
+    hidePane("learn");
+  };
+}
+
+function implementlocalAssetsTab() {
+  localAssetsTab.onclick = function click() {
+    showPane("localAssets");
+
+    hidePane("library");
+    hidePane("projects");
+    hidePane("engines");
+    hidePane("learn");
   };
 }
 
 function implementLearnTab() {
   learnTab.onclick = function click() {
-    learnTab.classList.add("selected");
-    libraryTab.classList.remove("selected");
-    libraryPane.classList.add("hiddenPane");
-    urlPane.classList.remove("hiddenPane");
-    addIframe();
+    showPane("learn");
+
+    hidePane("library");
+    hidePane("projects");
+    hidePane("engines");
+    hidePane("localAssets");
   };
 }
 
 implementLibraryTab();
-
+implementprojectsTab();
+implementenginesTab();
+implementlocalAssetsTab();
 implementLearnTab();
