@@ -21,6 +21,10 @@ It should offer:
 
 ## Thanks
 
+I used some code of the following projects to inspire me or to implement some functionalities.
+Many thanks to their author for sharing their work.
+
 - <https://github.com/nmrugg/UE4Launcher>
+- <https://github.com/CGeorges/unrealsales-tracker>
 - <https://github.com/Allar/ue4-mp-downloader>
 - <https://github.com/neutrino-steak/UE4LinuxLauncher>
