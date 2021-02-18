@@ -2,15 +2,15 @@
 <html>
 	<head>
 		<meta charset=utf-8>
-		<title>Unreal Engine Launcher | Epic Games</title>
+		<title>Unreal Engine Assets Manager</title>
 		<link rel=stylesheet href="css/base.css">
 		<link rel=stylesheet href="css/prompt.css">
 		<link rel=stylesheet href="css/contextual.css">
 	</head>
 	<body>
     <nav>
-			<header><img src=imgs/eg-logo.png class="eg-logo">Epic Games</header>
-			<div class="nav-item selected"><a href=#>Vault Content</a></div>
+			<header><img src=imgs/eg-logo.png class="eg-logo"></header>
+			<div class="nav-item selected"><a href=#>Library</a></div>
 		</nav>
 		<main id=main>
 			<header id=topMenu>
@@ -26,19 +26,19 @@
 					<div class=content-area id=vault> </div>
 				</fieldset>
 			</div>
-			<div class=content id=projectsPane>
+			<div class="content hiddenPane" id=projectsPane>
 				<fieldset>
 					<legend>Projects <span id=configProjects class=iconButton title="Configure Projects">&#x2699;</span></legend>
 					<div class=content-area id=projects> </div>
 				</fieldset>
 			</div>
-			<div class=content id=enginesPane>
+			<div class="content hiddenPane" id=enginesPane>
 				<fieldset>
 					<legend>Engine Versions <a id="addEngine" href=#>&#x2795;</a></legend>
 					<div class=content-area id=engines> </div>
 				</fieldset>
 			</div>
-			<div class=content id=localAssetsPane>
+			<div class="content hiddenPane" id=localAssetsPane>
 				<fieldset>
 					<legend title="Add assets from your local hard drive">Local Assets <a id="addAsset" href=#>&#x2795;</a></legend>
 					<div class=content-area id=localAssets> </div>

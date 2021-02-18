@@ -23,7 +23,7 @@ a {
 }
 
 nav {
-  width: 200px;
+  width: 100px;
   overflow-x: hidden;
   overflow-y: auto;
   box-sizing: border-box;
@@ -43,7 +43,7 @@ nav header {
 }
 
 main {
-  margin-left: 200px;
+  margin-left: 100px;
   overflow: auto;
   box-sizing: border-box;
   width: 100%;
