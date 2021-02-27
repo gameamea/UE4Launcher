@@ -367,6 +367,13 @@ function updateVault(ignoreCache) {
   ipc.send("updateVault", ignoreCache ? "1" : "0");
 }
 
+function updateLocalAssets(ignoreCache) {
+  events.emit("updatingLocalAssets");
+  console.log("updatingLocalAssets");
+
+  ipc.send("updateLocalAssets", ignoreCache ? "1" : "0");
+}
+
 function error(message, buttonText, options, cb) {
   console.error(message);
   options = options || {};
@@ -379,9 +386,8 @@ function alert(message, buttonText, options, cb) {
 }
 
 function createLocalAssetList() {
-  var containerEl = document.getElementById("localAssets");
-
   function listLocalAssets() {
+    var containerEl = document.getElementById("localAssets");
     var localAssets = parseJson(ipc.sendSync("getLocalAssets"), []);
 
     containerEl.innerHTML = "";
@@ -422,15 +428,14 @@ function createLocalAssetList() {
     });
   }
 
-  ipc.on("localAssetsModified", function (event, err) {
-    if (err) {
-      error(err);
+  ipc.on("updateLocalAssets", function (event, data) {
+    events.emit("doneUpdatingLocalAssets");
+    if (data) {
+      console.log("Updating local assets data.");
+      vaultData = JSON.parse(data);
+      listLocalAssets();
     }
-
-    createLocalAssetList();
   });
-
-  listLocalAssets();
 }
 
 function createVaultList() {
@@ -556,7 +561,7 @@ function deleteLocalAsset(assetData) {
 
 function implementAddLocalAssetButton() {
   document.getElementById("addAsset").onclick = function () {
-    simpleAsyncPrompt("Enter asset path:", function (path) {
+    simpleAsyncPrompt("Enter local assets folder path:", function (path) {
       if (path) {
         ipc.send("addLocalAsset", path);
         ///TODO: Make the local assets listen for updates
@@ -605,6 +610,22 @@ function implementRefreshVaultButton() {
   });
 
   events.on("doneUpdatingVault", function () {
+    refreshButton.classList.remove("spin");
+  });
+}
+
+function implementRefreshLocalAssetsButton() {
+  var refreshButton = document.getElementById("localAssetsRefresh");
+
+  refreshButton.onclick = function () {
+    updateLocalAssets(true);
+  };
+
+  events.on("updatingLocalAssets", function () {
+    refreshButton.classList.add("spin");
+  });
+
+  events.on("doneUpdatingLocalAssets", function () {
     refreshButton.classList.remove("spin");
   });
 }
@@ -665,6 +686,8 @@ function registerShortcuts() {
 }
 
 implementRefreshVaultButton();
+
+implementRefreshLocalAssetsButton();
 
 implementConfigProjectsButton();
 

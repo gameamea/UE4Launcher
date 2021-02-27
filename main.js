@@ -22,7 +22,7 @@ var cacheDir = p.join(__dirname, "cache");
 var vaultPath = p.join(cacheDir, "vault.json");
 var configPath = p.join(__dirname, "config.json");
 var assetJsonPath = p.join(cacheDir, "assets.json");
-var localAssetsPath = p.join(__dirname, "localAssets.json");
+var localAssetsPath = p.join(cacheDir, "localAssets.json");
 
 var vaultData;
 var configData;
@@ -46,6 +46,10 @@ function verifyConfigData() {
 
   if (!configData.engines) {
     configData.engines = [];
+  }
+
+  if (!configData.localAssetsDirPaths) {
+    configData.localAssetsDirPaths = [];
   }
 
   if (!configData.projectDirPaths || configData.projectDirPaths.length === 0) {
@@ -486,8 +490,8 @@ function createMainWindow() {
   });
   var contents = mainWindow.webContents;
 
-	// remove X-Frame-Options from header to allow the learn tab display content in an iframe
-	// more infos: https://stackoverflow.com/questions/52863908/electron-bypass-x-frame-options-in-sameorigin
+  // remove X-Frame-Options from header to allow the learn tab display content in an iframe
+  // more infos: https://stackoverflow.com/questions/52863908/electron-bypass-x-frame-options-in-sameorigin
   contents.session.webRequest.onHeadersReceived(
     { urls: ["*://*/*"] },
     (d, c) => {
@@ -688,6 +692,64 @@ function updateVault(ignoreCache, cb) {
   }
 }
 
+function readlocalAssetsData(cb) {
+  console.log(configData.localAssetsDirPaths);
+  var assetDirs;
+
+  configData.localAssetsDirPaths.forEach(function (baseDir) {
+    try {
+      assetDirs = fs.readdirSync(baseDir);
+    } catch (e) {
+      assetDirs = [];
+    }
+
+    assetDirs.forEach(function (dir) {
+      var path = p.join(baseDir, dir);
+      readLocalAsset(path, cb);
+    });
+  });
+  if (cb) {
+    cb(localAssetsData);
+  }
+}
+
+function updateLocalAssets(ignoreCache, cb) {
+  var shouldDownload;
+
+  shouldDownload = true;
+
+  try {
+    /// Only update the localAssets every 18 hours by default.
+    if (
+      !ignoreCache &&
+      fs.existsSync(localAssetsPath) &&
+      Date.now() - fs.statSync(localAssetsPath).mtime.valueOf() <
+        1000 * 60 * 60 * 18
+    ) {
+      shouldDownload = false;
+    }
+  } catch (e) {}
+
+  if (shouldDownload) {
+    readlocalAssetsData(function (data) {
+      if (data) {
+        localAssetsData = data;
+      } else {
+        localAssetsData = [];
+      }
+
+      fs.writeFileSync(localAssetsPath, JSON.stringify(localAssetsData));
+
+      if (cb) {
+        cb(localAssetsData);
+      }
+    });
+  } else {
+    console.log("Not updating local Assets: already up to date");
+    setImmediate(cb);
+  }
+}
+
 function startup() {
   loadAssetCache(function () {
     createMainWindow();
@@ -849,51 +911,42 @@ function findImage(path, cb) {
 
     findImageInDir(path, cb);
   });
+  return cb("");
 }
 
-function addLocalAssetDir(path, cb) {
+function addLocalAssetFromDir(path) {
   findImage(path, function onfind(imagePath) {
     localAssetsData.push({
       title: p.basename(path),
       path: path,
       thumbnail: imagePath,
     });
-
-    saveLocalAssets(function () {
-      cb();
-    });
   });
 }
 
-function hasLocalAsset(path) {
+function hasLocalAssetDir(path) {
   return localAssetsData.some(function (asset) {
     return asset.path === path;
   });
 }
 
-function addLocalAsset(path, cb) {
-  /// Check if path is directory or compressed file.
-  /// If directory, add path
-  ///TODO: Be able to copy
-  /// If file, extract
-  /// Find icon
-  /// Add to JSON
-  /// Reply
+function readLocalAsset(path) {
+  if (hasLocalAssetDir(path)) {
+    console.log("The local asset folder " + path + " has already been added.");
+  } else if (fs.statSync(path).isDirectory()) {
+    addLocalAssetFromDir(path);
+    console.log("The local asset folder " + path + " has been ADDED.");
+  }
+}
 
-  if (hasLocalAsset(path)) {
-    return cb("This asset has already been added.");
+function addLocalAsset(folderPath, cb) {
+  if (!configData.localAssetsDirPaths) {
+    configData.localAssetsDirPaths = [];
   }
 
-  fs.stat(path, function onstat(err, stat) {
-    if (err) {
-      console.error(err);
-      return cb("Path cannot be read.");
-    }
-
-    if (stat.isDirectory()) {
-      addLocalAssetDir(path, cb);
-    }
-  });
+  configData.localAssetsDirPaths.push(folderPath);
+  saveConfig();
+  readLocalAsset(folderPath, cb);
 }
 
 function delLocalAsset(path, cb) {
@@ -931,6 +984,14 @@ ipc.on("updateVault", function (e, ignoreCache) {
   });
 });
 
+ipc.on("updateLocalAssets", function (e, ignoreCache) {
+  console.log("updating LocalAssets");
+
+  updateLocalAssets(ignoreCache === "1", function (data) {
+    e.reply("updateLocalAssets", data ? JSON.stringify(data) : "");
+  });
+});
+
 ipc.on("getConfig", function (e, arg) {
   e.returnValue = JSON.stringify(configData);
 });
@@ -960,13 +1021,13 @@ ipc.on("addEngine", function (e, path) {
 
 ipc.on("addLocalAsset", function (e, path) {
   addLocalAsset(path, function (err) {
-    e.reply("localAssetsModified", err);
+    e.reply("updateLocalAssets", err);
   });
 });
 
 ipc.on("delLocalAsset", function (e, path) {
   delLocalAsset(path, function () {
-    e.reply("localAssetsModified", null);
+    e.reply("updateLocalAssets", null);
   });
 });
 
