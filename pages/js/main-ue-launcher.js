@@ -691,6 +691,8 @@ implementRefreshLocalAssetsButton();
 
 implementConfigProjectsButton();
 
+implementAddLocalAssetButton();
+
 loadConfig();
 
 loadAssetsData();
@@ -709,4 +711,3 @@ prepareForAddingAssets();
 
 registerShortcuts();
 
-implementAddLocalAssetButton();
